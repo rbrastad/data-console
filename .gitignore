@@ -29,6 +29,7 @@ Temporary Items
 ### Gradle ###
 .gradle
 build/
+!admin-data-console/build/libs
 
 # Ignore Gradle GUI config
 gradle-app.setting
@@ -90,3 +91,6 @@ crashlytics-build.properties
 *.css.map
 
 local.properties
+!/lib-data-console/build/libs/lib-data-console-0.0.1.jar
+!/admin-data-console/build/libs/admin-data-console-0.0.1.jar
+!/admin-data-console/build/libs/admin-data-console-0.0.1.jar
