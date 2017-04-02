@@ -1,0 +1,66 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+        maven {
+            url 'http://repo.enonic.com/public'
+        }
+    }
+
+    dependencies {
+        classpath "com.enonic.xp:gradle-plugin:${xpVersion}"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
+    }
+}
+
+apply plugin: 'maven'
+apply plugin: 'com.enonic.xp.app'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'idea'
+
+app {
+    name = project.appName
+    displayName = project.displayName
+    vendorName = 'rbrastad'
+    vendorUrl = 'https://www.rbrastad.no'
+}
+
+dependencies {
+    compile "com.enonic.xp:core-api:${xpVersion}"
+    compile "com.enonic.xp:portal-api:${xpVersion}"
+    include "com.enonic.xp:lib-portal:${xpVersion}"
+    include "com.enonic.xp:lib-thymeleaf:${xpVersion}"
+    include "com.enonic.xp:lib-websocket:${xpVersion}"
+    include "com.enonic.xp:lib-auth:${xpVersion}"
+
+    include "com.enonic.lib:util:1.1.1"
+}
+
+repositories {
+    mavenLocal()
+    jcenter()
+    maven {
+        url 'http://repo.enonic.com/public'
+    }
+}
+
+bintray {
+    user = "$bintrayUser"
+    key = "$bintrayApiKey"
+    publish = true
+    pkg {
+        repo = 'enonic'
+        name = project.appName
+        userOrg = 'rbrastad'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/rbrastad/data-console'
+        githubReleaseNotesFile = 'README.md' //Optional Github readme file
+        githubRepo = 'rbrastad/data-console' //Optional Github repository
+
+        version {
+            name = project.version
+            released = new Date()
+            configurations = ['archives']
+        }
+    }
+}

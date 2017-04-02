@@ -1,0 +1,4 @@
+rootProject.name = projectName
+
+include 'lib-data-console'
+project(':lib-data-console').projectDir = new File('../lib-data-console')

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Data Console</title>
+
+    <!-- Common style and library used by the Launcher Panel -->
+    <link rel="stylesheet" type="text/css" href="{{adminAssetsUrl}}/common/styles/_all.css">
+    <script type="text/javascript" src="{{adminAssetsUrl}}/common/lib/_all.js"></script>
+    <script type="text/javascript" src="{{assetsUrl}}/github-com-caldwell-renderjson/1.2.3/renderjson.js"></script>
+    <script type="text/javascript" src="{{assetsUrl}}/bower_components/jquery/dist/jquery.min.js"  src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script type="text/javascript" src="{{assetsUrl}}/bower_components/jquery/dist/jquery.min.js"  src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script type="text/javascript" src="{{assetsUrl}}/bower_components/bootstrap/dist/js/bootstrap.min.js"  src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <!-- App bar style -->
+    <link rel="stylesheet" type="text/css" href="{{assetsUrl}}/styles/toolstarter.css">
+    <link href="{{assetsUrl}}/font-awesome/4.7.0/css/font-awesome.min.css" href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="{{assetsUrl}}/bower_components/bootstrap/dist/css/bootstrap.min.css" href="../assets/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="{{assetsUrl}}/bower_components/bootstrap-vertical-tabs/bootstrap.vertical-tabs.min.css">
+
+    <style>
+        .renderjson a              { text-decoration: none; }
+        .renderjson .disclosure    { color: #000;
+            font-size: 150%; }
+        .renderjson .syntax        { color: #000; }
+        .renderjson .string        { color: green; }
+        .renderjson .number        { color: green; }
+        .renderjson .boolean       { color: green; }
+        .renderjson .key           { color: #000;font-weight: bold }
+        .renderjson .keyword       { color: lightgoldenrodyellow; }
+        .renderjson .object.syntax { color: lightseagreen; }
+        .renderjson .array.syntax  { color: lightsalmon; }
+
+
+        .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+            color: #000;
+            font-weight: bold;
+            cursor: default;
+            border: 1px solid #ddd;
+            background-color: transparent;
+        }
+    </style>
+</head>
+<script type="text/javascript">
+    var counter = 1;
+
+    function generateQuickGuid() {
+        return Math.random().toString(36).substring(2, 15) +
+            Math.random().toString(36).substring(2, 15);
+    }
+
+    var socket = new WebSocket("ws://{{serviceDataConsole}}", "text");
+    socket.onmessage = function (event) {
+        //console.log( "socket.onmessage");
+        //  console.log( event);
+
+        renderjson.set_show_to_level(4);
+        var guid = generateQuickGuid();
+
+        try {
+            var eventData = JSON.parse(event.data);
+
+
+            var title = new Date();
+            if(eventData.title != undefined)
+                title = eventData.title;
+
+            var alertClass = "alert-info";
+            if (eventData.dataConsole.logType === 'error'){
+                alertClass = "alert-danger"
+            }else if (eventData.dataConsole.logType === 'warning') {
+                alertClass = "alert-warning"
+            }else if (eventData.dataConsole.logType === 'debug') {
+                alertClass = "alert-warning"
+            }
+
+
+            $("#tabs").prepend('<li class="' + alertClass + '"><a href="#' + guid + '" data-toggle="tab">' + counter++ + ". "   + title + '</a></li>');
+            $("#contents").prepend('<div class="tab-pane" id="' + guid + '"><div style="background-color:#fff" id="data-' + guid + '"></div></div>');
+            $("#data-" + guid).html(renderjson(eventData));
+            $('#tabs a[href="#' + guid + '"]').tab('show');
+        }catch (e){
+            $("#tabs").prepend('<li><a href="#' + guid + '" data-toggle="tab">' + counter++ + ". "   + new Date() + '</a></li>');
+            $("#contents").prepend('<div class="tab-pane" id="' + guid + '"><div style="background-color:#fff" id="data-' + guid + '"></div></div>');
+            $("#data-" + guid).html( renderjson(event.data) );
+            $('#tabs a[href="#' + guid + '"]').tab('show');
+        }
+    };
+
+</script>
+<body>
+
+<!-- App bar -->
+<div class="app-bar">
+    <div class="app-button">
+        <img class="app-icon" src="{{assetsUrl}}/icons/application.svg"/>
+        <span class="app-title">Data Console</span>
+    </div>
+</div>
+
+<div class="row" style="padding: 20px;">
+    <div class="col-xs-3"> <!-- required for floating -->
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs tabs-left" id="tabs"><!-- 'tabs-right' for right tabs -->
+            <li class="active"><a href="#start" data-toggle="tab">Start</a></li>
+        </ul>
+    </div>
+    <div class="col-xs-9">
+        <!-- Tab panes -->
+        <div class="tab-content" id="contents">
+            <div class="tab-pane active" id="start">Starting to establish Web Socket connection to data console websocket... </div>
+        </div>
+    </div>
+</div>
+<!-- Appends the Launcher Panel to the document body -->
+<script>
+    var CONFIG = {
+        adminUrl: '{{adminUrl}}',
+        appId: 'data-console'
+    };
+</script>
+<script type="text/javascript" src="{{adminAssetsUrl}}/apps/launcher/js/_all.js"></script>
+</body>
+</html>

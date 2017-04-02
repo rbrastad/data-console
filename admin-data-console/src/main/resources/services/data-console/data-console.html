@@ -1,0 +1,40 @@
+<html>
+<head>
+    <title>Data Console - Enonic XP</title>
+    <link type="text/css" rel="stylesheet" data-th-href="${portal.assetUrl({'_path=css/bot.css'})}"/>
+    <script type="text/javascript">
+        var socket = new WebSocket("ws://local.item.no:8080/_/service/no.rbrastad.enonic.lib.data.console/data-console", "text");
+        socket.onmessage = function (event) {
+
+            console.log( "socket.onmessage");
+
+            console.log( event);
+
+
+            var el = document.getElementById('chatbox');
+            el.innerHTML += event.data + '<br/>';
+        };
+        function sendMessage() {
+            var el = document.getElementById('message');
+            if (el.value.length > 0) {
+                socket.send(el.value);
+                el.value = '';
+            }
+        }
+    </script>
+</head>
+<body>
+<div id="wrapper">
+    <div id="menu">
+        <p class="welcome">Welcome, <b>Unknown</b></p>
+        <div style="clear:both"></div>
+    </div>
+
+    <div id="chatbox"></div>
+
+    <input name="message" type="text" id="message" size="20"/>
+    <input name="submit" type="submit" id="submit" value="Send" onclick="sendMessage();"/>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,71 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+        maven {
+            url 'http://repo.enonic.com/public'
+        }
+    }
+
+    dependencies {
+        classpath "com.enonic.xp:gradle-plugin:${xpVersion}"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.6'
+    }
+}
+
+apply plugin: 'com.enonic.xp.app'
+apply plugin: 'com.jfrog.bintray'
+
+app {
+    name = project.appName
+    displayName = project.displayName
+    vendorName = 'Runar Brastad'
+    vendorUrl = 'https://rbrastad.no'
+}
+
+dependencies {
+    compile "com.enonic.xp:core-api:${xpVersion}"
+    compile "com.enonic.xp:portal-api:${xpVersion}"
+    include "com.enonic.xp:lib-mustache:${xpVersion}"
+    include "com.enonic.xp:lib-portal:${xpVersion}"
+
+    include "com.enonic.xp:lib-thymeleaf:${xpVersion}"
+    include "com.enonic.xp:lib-websocket:${xpVersion}"
+    include "com.enonic.xp:lib-auth:${xpVersion}"
+
+    include "com.enonic.lib:util:1.1.1"
+
+    webjar "org.webjars.bower:github-com-caldwell-renderjson:1.2.3"
+    webjar "org.webjars:font-awesome:4.7.0"
+}
+
+
+repositories {
+    mavenLocal()
+    jcenter()
+    maven {
+        url 'http://repo.enonic.com/public'
+    }
+}
+
+
+bintray {
+    user = "$bintrayUser"
+    key = "$bintrayApiKey"
+    publish = true
+    pkg {
+        repo = 'enonic'
+        name = project.appName
+        userOrg = 'rbrastad'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/rbrastad/data-log-viewer'
+        githubReleaseNotesFile = 'README.md' //Optional Github readme file
+        githubRepo = 'rbrastad/data-log-viewer' //Optional Github repository
+
+        version {
+            name = project.version
+            released = new Date()
+            configurations = ['archives']
+        }
+    }
+}
