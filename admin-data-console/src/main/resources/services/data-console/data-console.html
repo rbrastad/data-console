@@ -3,7 +3,14 @@
     <title>Data Console - Enonic XP</title>
     <link type="text/css" rel="stylesheet" data-th-href="${portal.assetUrl({'_path=css/bot.css'})}"/>
     <script type="text/javascript">
-        var socket = new WebSocket("ws://local.item.no:8080/_/service/no.rbrastad.enonic.lib.data.console/data-console", "text");
+        var host = [[${portal.serviceUrl({'_service='})}]];
+        if( host.indexOf("https") == -1  ){
+            host = host.replace("http", "ws");
+        }else{
+            host = host.replace("https", "wss");
+        }
+
+        var socket = new WebSocket("/no.rbrastad.enonic.lib.data.console/data-console", "text");
         socket.onmessage = function (event) {
 
             console.log( "socket.onmessage");

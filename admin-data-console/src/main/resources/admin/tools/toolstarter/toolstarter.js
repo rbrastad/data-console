@@ -10,6 +10,7 @@ exports.get = function (req) {
     var adminAssetsUrl = portalLib.url({path: "/admin/assets/" + xpVersion});
     var assetsUrl = portalLib.assetUrl({path: ""});
     var serviceDataConsole = portalLib.serviceUrl({service: "data-console",type: "absolute"});
+ ///   var serviceDataConsole = portalLib.serviceUrl({service: "data-console"});
 
     var params = {
         adminUrl: adminUrl,

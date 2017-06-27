@@ -42,6 +42,9 @@
     </style>
 </head>
 <script type="text/javascript">
+    $("#connected").hide();
+    $("#connected-not").show();
+
     var counter = 1;
 
     function generateQuickGuid() {
@@ -49,7 +52,16 @@
             Math.random().toString(36).substring(2, 15);
     }
 
-    var socket = new WebSocket("ws://{{serviceDataConsole}}", "text");
+    var urlProtocol = "ws";
+    if (location.protocol == 'https:'){
+        urlProtocol = "wss";
+    }
+
+    var wsurl = urlProtocol + "://{{serviceDataConsole}}";
+
+    console.log("wsurl: " + wsurl );
+
+    var socket = new WebSocket( wsurl, "text");
     socket.onmessage = function (event) {
         //console.log( "socket.onmessage");
         //  console.log( event);
@@ -87,14 +99,65 @@
         }
     };
 
+    socket.onerror = function(evt) {
+        $("#connected").hide();
+        $("#connected-not").show();
+    };
+
+    socket.onopen = function(evt) {
+        setInterval(
+            function(){
+                var interval = 20 * 1000;
+                var currentTime = new Date().getTime();
+                switch (socket.readyState) {
+                    case WebSocket.CONNECTING:
+                        //console.log("CONNECTING");
+                        break;
+                    case WebSocket.OPEN:
+                        $("#connected-not").hide();
+                        $("#connected").show();
+                       // console.log("OPEN");
+                        break;
+                    case WebSocket.CLOSING:
+                        //console.log("CLOSING");
+                        break;
+                    case WebSocket.CLOSED:
+                        //console.log("CLOSED");
+                        $("#connected").hide();
+                        $("#connected-not").show();
+
+                        socket = new WebSocket("ws://{{serviceDataConsole}}", "text");
+                        break;
+                    default:
+                        // this never happens
+                        break;
+                }
+            },
+            10000
+        );
+    };
+
+
 </script>
 <body>
 
 <!-- App bar -->
 <div class="app-bar">
-    <div class="app-button">
+    <div class="app-button pull-left">
         <img class="app-icon" src="{{assetsUrl}}/icons/application.svg"/>
         <span class="app-title">Data Console</span>
+    </div>
+    <div class="app-button pull-left" style="margin-left:20px">
+        <!--
+        <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+        <span class="sr-only">Loading...</span>
+      -->
+        <a id="connected" class="btn btn-sm btn-success" style="display: none;" href="#">
+            <i class="fa fa-thumbs-o-up fa-lg" style="display: none;" aria-hidden="true"></i> Connected
+        </a>
+        <a id="connected-not" class="btn btn-sm btn-danger" href="#">
+            <i class="fa fa-thumbs-o-down fa-lg" aria-hidden="true"></i> No Connection
+        </a>
     </div>
 </div>
 
