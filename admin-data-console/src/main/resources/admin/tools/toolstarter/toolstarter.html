@@ -59,8 +59,6 @@
 
     var wsurl = urlProtocol + "://{{serviceDataConsole}}";
 
-    console.log("wsurl: " + wsurl );
-
     var socket = new WebSocket( wsurl, "text");
     socket.onmessage = function (event) {
         //console.log( "socket.onmessage");
@@ -126,7 +124,9 @@
                         $("#connected").hide();
                         $("#connected-not").show();
 
-                        socket = new WebSocket("ws://{{serviceDataConsole}}", "text");
+                        var wsurl = urlProtocol + "://{{serviceDataConsole}}";
+                        socket = new WebSocket( wsurl , "text");
+
                         break;
                     default:
                         // this never happens
